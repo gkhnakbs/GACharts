@@ -17,7 +17,7 @@ object LabelRenderer {
         ticks: AxisCalculator.AxisTicks,
         textColor: Color,
         textSize: Float
-    ) {
+    ) {    
         val paint = android.graphics.Paint().apply {
             color = textColor. hashCode()
             this.textSize = textSize
