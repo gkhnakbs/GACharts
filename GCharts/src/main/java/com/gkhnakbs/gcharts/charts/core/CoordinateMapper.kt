@@ -1,8 +1,84 @@
 package com.gkhnakbs.gcharts.charts.core
 
+
+import androidx.compose.ui. geometry.Offset
+import androidx. compose.ui.unit.Density
+
 /**
  * Created by Gökhan Akbaş on 09/12/2025.
  */
+class CoordinateMapper(
+    private val canvasWidth: Float,
+    private val canvasHeight: Float,
+    private val paddingStartPx: Float,
+    private val paddingEndPx: Float,
+    private val paddingTopPx: Float,
+    private val paddingBottomPx: Float,
+    private val data: LineChartData
+) {
+    // Çizilebilir alan boyutları
+    val drawableWidth:  Float = canvasWidth - paddingStartPx - paddingEndPx
+    val drawableHeight:  Float = canvasHeight - paddingTopPx - paddingBottomPx
 
-class CoordinateMapper {
+    // Çizilebilir alanın başlangıç noktası
+    val drawableStartX: Float = paddingStartPx
+    val drawableStartY: Float = paddingTopPx
+    val drawableEndX: Float = canvasWidth - paddingEndPx
+    val drawableEndY:  Float = canvasHeight - paddingBottomPx
+
+    /**
+     * DataPoint'i Canvas koordinatına çevirir
+     */
+    fun dataToCanvas(point: DataPoint): Offset {
+        val x = paddingStartPx + ((point. x - data.minX) / data.xRange) * drawableWidth
+
+        // Canvas'ta Y ekseni ters (yukarı = 0, aşağı = max)
+        // Veri koordinatında yukarı = max olmalı
+        val y = paddingTopPx + drawableHeight - ((point.y - data.minY) / data.yRange) * drawableHeight
+
+        return Offset(x, y)
+    }
+
+    /**
+     * Tüm noktaları Canvas koordinatlarına çevirir
+     */
+    fun mapAllPoints(): List<Offset> {
+        return data.points.map { dataToCanvas(it) }
+    }
+
+    /**
+     * Y değerini Canvas Y koordinatına çevirir
+     */
+    fun yValueToCanvas(yValue: Float): Float {
+        return paddingTopPx + drawableHeight - ((yValue - data.minY) / data.yRange) * drawableHeight
+    }
+
+    /**
+     * X değerini Canvas X koordinatına çevirir
+     */
+    fun xValueToCanvas(xValue: Float): Float {
+        return paddingStartPx + ((xValue - data.minX) / data.xRange) * drawableWidth
+    }
+
+    companion object {
+        fun create(
+            canvasWidth: Float,
+            canvasHeight: Float,
+            padding: ChartPadding,
+            density: Density,
+            data: LineChartData
+        ): CoordinateMapper {
+            with(density) {
+                return CoordinateMapper(
+                    canvasWidth = canvasWidth,
+                    canvasHeight = canvasHeight,
+                    paddingStartPx = padding.start.toPx(),
+                    paddingEndPx = padding.end. toPx(),
+                    paddingTopPx = padding.top.toPx(),
+                    paddingBottomPx = padding.bottom.toPx(),
+                    data = data
+                )
+            }
+        }
+    }
 }
