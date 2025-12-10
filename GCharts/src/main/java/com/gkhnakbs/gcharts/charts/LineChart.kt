@@ -71,7 +71,7 @@ fun LineChart(
             .background(style.backgroundColor)
     ) {
         // Coordinate mapper oluştur
-        val mapper = CoordinateMapper. create(
+        val mapper = CoordinateMapper.create(
             canvasWidth = size.width,
             canvasHeight = size.height,
             padding = padding,
@@ -80,7 +80,7 @@ fun LineChart(
         )
 
         // Noktaları canvas koordinatlarına çevir
-        val canvasPoints:  List<Offset> = mapper.mapAllPoints()
+        val canvasPoints: List<Offset> = mapper.mapAllPoints()
 
         // Değerleri pixel'e çevir
         val lineWidthPx = with(density) { config.lineWidth.toPx() }

@@ -16,6 +16,7 @@ data class LineChartData(
         require(points.isNotEmpty()) { "Points list cannot be empty" }
     }
 
+    // Lazy ile değişken kullanılmak istendiğinde hesaplanır ve tekrar tekrar hesaplanmaz
     val minX: Float by lazy { points.minOf { it.x } }
     val maxX: Float by lazy { points. maxOf { it.x } }
     val minY: Float by lazy { points.minOf { it.y } }

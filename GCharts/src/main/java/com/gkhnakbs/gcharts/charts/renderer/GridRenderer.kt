@@ -11,7 +11,7 @@ import com.gkhnakbs.gcharts.charts.core.CoordinateMapper
 
 object GridRenderer {
 
-    fun DrawScope. drawGrid(
+    fun DrawScope.drawGrid(
         mapper: CoordinateMapper,
         gridColor: Color,
         gridStrokeWidth: Float,

@@ -4,7 +4,7 @@ package com.gkhnakbs.gcharts.charts.config
 import androidx.compose.runtime.Immutable
 import androidx. compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui. unit.sp
+import androidx.compose.ui.unit.sp
 
 /**
  * Created by Gökhan Akbaş on 09/12/2025.

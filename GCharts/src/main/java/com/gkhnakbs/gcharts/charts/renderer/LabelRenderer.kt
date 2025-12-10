@@ -14,7 +14,7 @@ object LabelRenderer {
 
     fun DrawScope.drawYAxisLabels(
         mapper: CoordinateMapper,
-        ticks: AxisCalculator. AxisTicks,
+        ticks: AxisCalculator.AxisTicks,
         textColor: Color,
         textSize: Float
     ) {
@@ -31,7 +31,7 @@ object LabelRenderer {
             drawContext.canvas.nativeCanvas.drawText(
                 label,
                 mapper.drawableStartX - 8f,
-                y + textSize / 3, // Dikey ortalama
+                y + (textSize / 3), // Dikey ortalama
                 paint
             )
         }
