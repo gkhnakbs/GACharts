@@ -16,22 +16,31 @@ object LabelRenderer {
         mapper: CoordinateMapper,
         ticks: AxisCalculator.AxisTicks,
         textColor: Color,
-        textSize: Float
-    ) {    
+        textSize: Float,
+        defaultDistanceToYAxis : Float = 30f
+    ) {
         val paint = android.graphics.Paint().apply {
-            color = textColor. hashCode()
+            color = textColor.hashCode()
             this.textSize = textSize
-            textAlign = android.graphics.Paint.Align. RIGHT
+            textAlign = android.graphics.Paint.Align.CENTER
         }
 
+        // Metin metriklerini kullanarak doğru dikey ortalama hesapla
+        val fontMetrics = paint.fontMetrics
+        val textVerticalOffset = (fontMetrics.descent - fontMetrics.ascent) / 2 - fontMetrics.descent
+
+        val gridGapY = mapper.drawableHeight / (ticks.labels.size-1)
         ticks.values.forEachIndexed { index, value ->
             val y = mapper.yValueToCanvas(value)
             val label = ticks.labels[index]
 
+            // Label'ın grafiğin dışına çıkmaması için sınırla
+            val clampedY = mapper.drawableEndY - (index * gridGapY).coerceAtMost(mapper.drawableHeight)
+
             drawContext.canvas.nativeCanvas.drawText(
                 label,
-                mapper.drawableStartX - 8f,
-                y + (textSize / 3), // Dikey ortalama
+                mapper.drawableStartX - defaultDistanceToYAxis,
+                clampedY+textVerticalOffset,
                 paint
             )
         }
@@ -39,24 +48,24 @@ object LabelRenderer {
 
     fun DrawScope.drawXAxisLabels(
         mapper:  CoordinateMapper,
-        ticks: AxisCalculator. AxisTicks,
+        ticks: AxisCalculator.AxisTicks,
         textColor: Color,
         textSize:  Float
     ) {
         val paint = android.graphics.Paint().apply {
             color = textColor.hashCode()
             this.textSize = textSize
-            textAlign = android.graphics.Paint. Align.CENTER
+            textAlign = android.graphics.Paint.Align.CENTER
         }
 
-        ticks.values. forEachIndexed { index, value ->
+        ticks.values.forEachIndexed { index, value ->
             val x = mapper.xValueToCanvas(value)
-            val label = ticks. labels[index]
+            val label = ticks.labels[index]
 
             drawContext.canvas.nativeCanvas.drawText(
                 label,
                 x,
-                mapper. drawableEndY + textSize + 8f,
+                mapper.drawableEndY + textSize + 8f,
                 paint
             )
         }

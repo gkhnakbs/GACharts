@@ -20,27 +20,27 @@ object GridRenderer {
     ) {
         val dashEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
 
-        // Yatay çizgiler
-        for (i in 0.. horizontalLines) {
+        // Yatay çizgiler (horizontalLines + 1 tane çizgi çizmek için)
+        for (i in 0..horizontalLines) {
             val y = mapper.drawableStartY + (mapper.drawableHeight / horizontalLines) * i
 
             drawLine(
                 color = gridColor,
-                start = androidx.compose.ui.geometry. Offset(mapper.drawableStartX, y),
-                end = androidx.compose. ui.geometry.Offset(mapper.drawableEndX, y),
+                start = androidx.compose.ui.geometry.Offset(mapper.drawableStartX, y),
+                end = androidx.compose.ui.geometry.Offset(mapper.drawableEndX, y),
                 strokeWidth = gridStrokeWidth,
                 pathEffect = dashEffect
             )
         }
 
-        // Dikey çizgiler
+        // Dikey çizgiler (verticalLines + 1 tane çizgi çizmek için)
         for (i in 0..verticalLines) {
             val x = mapper.drawableStartX + (mapper.drawableWidth / verticalLines) * i
 
             drawLine(
                 color = gridColor,
-                start = androidx.compose.ui.geometry. Offset(x, mapper.drawableStartY),
-                end = androidx.compose.ui.geometry. Offset(x, mapper.drawableEndY),
+                start = androidx.compose.ui.geometry.Offset(x, mapper.drawableStartY),
+                end = androidx.compose.ui.geometry.Offset(x, mapper.drawableEndY),
                 strokeWidth = gridStrokeWidth,
                 pathEffect = dashEffect
             )

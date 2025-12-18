@@ -1,6 +1,7 @@
 package com.gkhnakbs.gcharts.charts.core
 
 
+import java.util.Locale
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.log10
@@ -13,7 +14,9 @@ object AxisCalculator {
 
     data class AxisTicks(
         val values: List<Float>,
-        val labels: List<String>
+        val labels: List<String>,
+        val maxLabelValue: Float,
+        val minLabelValue: Float,
     )
 
     /**
@@ -21,13 +24,15 @@ object AxisCalculator {
      */
     fun calculateYAxisTicks(
         minValue: Float,
-        maxValue:  Float,
-        desiredTickCount: Int = 5
+        maxValue: Float,
+        desiredTickCount: Int = 5,
     ): AxisTicks {
         if (minValue == maxValue) {
             return AxisTicks(
                 values = listOf(minValue),
-                labels = listOf(formatLabel(minValue))
+                labels = listOf(formatLabel(minValue)),
+                maxLabelValue = maxValue,
+                minLabelValue = minValue
             )
         }
 
@@ -43,13 +48,15 @@ object AxisCalculator {
         val values = mutableListOf<Float>()
         var current = niceMin
         while (current <= niceMax + niceStep / 2) {
-            values. add(current)
+            values.add(current)
             current += niceStep
         }
 
         return AxisTicks(
             values = values,
-            labels = values.map { formatLabel(it) }
+            labels = values.map { formatLabel(it) },
+            maxLabelValue = niceMax,
+            minLabelValue = niceMin
         )
     }
 
@@ -57,16 +64,16 @@ object AxisCalculator {
      * X ekseni için tick değerlerini hesaplar
      */
     fun calculateXAxisTicks(
-        minValue:  Float,
+        minValue: Float,
         maxValue: Float,
-        desiredTickCount:  Int = 5
+        desiredTickCount: Int = 5,
     ): AxisTicks {
         return calculateYAxisTicks(minValue, maxValue, desiredTickCount)
     }
 
     private fun calculateNiceStep(roughStep: Float): Float {
         val exponent = floor(log10(roughStep))
-        val fraction = roughStep / 10f. pow(exponent)
+        val fraction = roughStep / 10f.pow(exponent)
 
         val niceFraction = when {
             fraction <= 1.5 -> 1f
@@ -75,14 +82,14 @@ object AxisCalculator {
             else -> 10f
         }
 
-        return niceFraction * 10f. pow(exponent)
+        return niceFraction * 10f.pow(exponent)
     }
 
     private fun formatLabel(value: Float): String {
         return if (value == value.toLong().toFloat()) {
-            value. toLong().toString()
+            value.toLong().toString()
         } else {
-            String.format("%.1f", value)
+            String.format(Locale.getDefault(), "%.1f", value)
         }
     }
 }

@@ -45,7 +45,7 @@ fun LineChart(
     val animationProgress = rememberChartAnimationState(
         key = data,
         enabled = config.animationEnabled,
-        duration = config. animationDuration
+        duration = config.animationDuration
     )
 
     // Axis tick'lerini hesapla (sadece data değiştiğinde)
@@ -60,7 +60,7 @@ fun LineChart(
     val xAxisTicks = remember(data) {
         AxisCalculator.calculateXAxisTicks(
             minValue = data.minX,
-            maxValue = data. maxX,
+            maxValue = data.maxX,
             desiredTickCount = config.verticalGridLines
         )
     }
@@ -76,7 +76,13 @@ fun LineChart(
             canvasHeight = size.height,
             padding = padding,
             density = density,
-            data = data
+            data = data,
+            yAxisMaxValue = yAxisTicks.maxLabelValue,
+            yAxisMinValue = yAxisTicks.minLabelValue,
+            xAxisMaxValue = xAxisTicks.maxLabelValue,
+            xAxisMinValue = xAxisTicks.minLabelValue,
+            yAxisLabelCount = yAxisTicks.labels.size,
+            xAxisLabelCount = xAxisTicks.labels.size
         )
 
         // Noktaları canvas koordinatlarına çevir
@@ -96,8 +102,8 @@ fun LineChart(
                 mapper = mapper,
                 gridColor = config.gridColor,
                 gridStrokeWidth = gridStrokeWidthPx,
-                horizontalLines = config.horizontalGridLines,
-                verticalLines = config.verticalGridLines
+                horizontalLines = yAxisTicks.labels.lastIndex,
+                verticalLines = xAxisTicks.labels.lastIndex
             )
         }
 

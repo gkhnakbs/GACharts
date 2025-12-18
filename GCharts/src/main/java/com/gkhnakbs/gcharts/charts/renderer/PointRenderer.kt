@@ -19,7 +19,7 @@ object PointRenderer {
         pointFillColor: Color,
         animationProgress: Float = 1f
     ) {
-        val visiblePointCount = (points. size * animationProgress).toInt()
+        val visiblePointCount = (points.size * animationProgress).toInt()
 
         for (i in 0 until visiblePointCount) {
             val point = points[i]

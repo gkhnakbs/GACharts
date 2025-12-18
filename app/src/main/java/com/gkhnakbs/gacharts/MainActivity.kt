@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
                     ){
                         val sampleData = LineChartData(
                             points = listOf(
-                                DataPoint(0f, 100f,"test1"),
+                                DataPoint(0f, 90f,"test1"),
                                 DataPoint(1f, 250f,"test2"),
                                 DataPoint(2f, 180f,"test3"),
                                 DataPoint(3f, 350f,"test4"),
