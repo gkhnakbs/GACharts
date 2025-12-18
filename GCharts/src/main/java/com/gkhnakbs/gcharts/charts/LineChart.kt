@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.gkhnakbs.gcharts.charts.animation.ChartAnimationConfig
 import com.gkhnakbs.gcharts.charts.animation.rememberChartAnimationState
 import com.gkhnakbs.gcharts.charts.config.LineChartConfig
 import com.gkhnakbs.gcharts.charts.config.LineChartStyle
@@ -37,15 +38,26 @@ fun LineChart(
     modifier: Modifier = Modifier,
     config: LineChartConfig = LineChartConfig(),
     style: LineChartStyle = LineChartStyle(),
-    padding: ChartPadding = ChartPadding()
+    padding: ChartPadding = ChartPadding(),
 ) {
     val density = LocalDensity.current
 
+    // Animasyon config'i oluştur
+    val animationConfig = remember(config) {
+        ChartAnimationConfig(
+            enabled = config.animationEnabled,
+            duration = config.animationDuration,
+            type = config.animationType,
+            easing = config.animationEasing,
+            delayMs = config.animationDelayMs,
+            staggeredDelay = config.staggeredPointDelay
+        )
+    }
+
     // Animasyon state'i
-    val animationProgress = rememberChartAnimationState(
+    val animationState = rememberChartAnimationState(
         key = data,
-        enabled = config.animationEnabled,
-        duration = config.animationDuration
+        config = animationConfig
     )
 
     // Axis tick'lerini hesapla (sadece data değiştiğinde)
@@ -70,36 +82,32 @@ fun LineChart(
             .fillMaxSize()
             .background(style.backgroundColor)
     ) {
-        // Coordinate mapper oluştur
-        val mapper = CoordinateMapper.create(
+        // Canvas boyutlarıyla mapper'ı oluştur (data değiştiğinde yeniden hesapla)
+        val actualMapper = CoordinateMapper.create(
             canvasWidth = size.width,
             canvasHeight = size.height,
             padding = padding,
             density = density,
             data = data,
-            yAxisMaxValue = yAxisTicks.maxLabelValue,
-            yAxisMinValue = yAxisTicks.minLabelValue,
-            xAxisMaxValue = xAxisTicks.maxLabelValue,
-            xAxisMinValue = xAxisTicks.minLabelValue,
-            yAxisLabelCount = yAxisTicks.labels.size,
-            xAxisLabelCount = xAxisTicks.labels.size
+            yAxisTicks = yAxisTicks,
+            xAxisTicks = xAxisTicks
         )
 
         // Noktaları canvas koordinatlarına çevir
-        val canvasPoints: List<Offset> = mapper.mapAllPoints()
+        val canvasPoints: List<Offset> = actualMapper.mapAllPoints()
 
         // Değerleri pixel'e çevir
         val lineWidthPx = with(density) { config.lineWidth.toPx() }
         val pointRadiusPx = with(density) { config.pointRadius.toPx() }
         val pointStrokeWidthPx = with(density) { config.pointStrokeWidth.toPx() }
         val gridStrokeWidthPx = with(density) { config.gridStrokeWidth.toPx() }
-        val axisStrokeWidthPx = with(density) { config.axisStrokeWidth. toPx() }
+        val axisStrokeWidthPx = with(density) { config.axisStrokeWidth.toPx() }
         val labelTextSizePx = with(density) { style.labelTextStyle.fontSize.toPx() }
 
         // 1. Grid çiz (en altta)
         if (config.showGrid) {
             drawGrid(
-                mapper = mapper,
+                mapper = actualMapper,
                 gridColor = config.gridColor,
                 gridStrokeWidth = gridStrokeWidthPx,
                 horizontalLines = yAxisTicks.labels.lastIndex,
@@ -110,7 +118,7 @@ fun LineChart(
         // 2. Eksenleri çiz
         if (config.showAxes) {
             drawAxes(
-                mapper = mapper,
+                mapper = actualMapper,
                 axisColor = config.axisColor,
                 axisStrokeWidth = axisStrokeWidthPx
             )
@@ -118,7 +126,7 @@ fun LineChart(
 
         // 3. Y ekseni label'ları
         drawYAxisLabels(
-            mapper = mapper,
+            mapper = actualMapper,
             ticks = yAxisTicks,
             textColor = style.labelTextStyle.color,
             textSize = labelTextSizePx
@@ -126,7 +134,7 @@ fun LineChart(
 
         // 4. X ekseni label'ları
         drawXAxisLabels(
-            mapper = mapper,
+            mapper = actualMapper,
             ticks = xAxisTicks,
             textColor = style.labelTextStyle.color,
             textSize = labelTextSizePx
@@ -135,21 +143,24 @@ fun LineChart(
         // 5. Çizgiyi çiz
         drawLine(
             points = canvasPoints,
-            color = config.lineColor,
+            color = config.lineColor.copy(alpha = animationState.alpha),
             strokeWidth = lineWidthPx,
             strokeCap = config.lineCap,
-            animationProgress = animationProgress
+            animationProgress = animationState.progress,
+            revealProgress = animationState.revealProgress
         )
 
         // 6. Noktaları çiz (en üstte)
         if (config.showPoints) {
             drawPoints(
                 points = canvasPoints,
-                pointColor = config.pointColor,
-                pointRadius = pointRadiusPx,
+                pointColor = config.pointColor.copy(alpha = animationState.alpha),
+                pointRadius = pointRadiusPx * animationState.scale,
                 pointStrokeWidth = pointStrokeWidthPx,
-                pointFillColor = config.pointFillColor,
-                animationProgress = animationProgress
+                pointFillColor = config.pointFillColor.copy(alpha = animationState.alpha),
+                animationProgress = animationState.progress,
+                slideOffset = animationState.slideOffset,
+                drawableHeight = actualMapper.drawableHeight
             )
         }
     }
