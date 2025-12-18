@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,6 +27,8 @@ import com.gkhnakbs.gcharts.charts.renderer.GridRenderer.drawGrid
 import com.gkhnakbs.gcharts.charts.renderer.LabelRenderer.drawXAxisLabels
 import com.gkhnakbs.gcharts.charts.renderer.LabelRenderer.drawYAxisLabels
 import com.gkhnakbs.gcharts.charts.renderer.LineRenderer.drawLine
+import com.gkhnakbs.gcharts.charts.renderer.LineRenderer.drawSmoothLine
+import com.gkhnakbs.gcharts.charts.renderer.PointRenderer.drawCustomPoints
 import com.gkhnakbs.gcharts.charts.renderer.PointRenderer.drawPoints
 
 /**
@@ -141,27 +144,59 @@ fun LineChart(
         )
 
         // 5. Çizgiyi çiz
-        drawLine(
+        drawSmoothLine(
             points = canvasPoints,
             color = config.lineColor.copy(alpha = animationState.alpha),
             strokeWidth = lineWidthPx,
             strokeCap = config.lineCap,
-            animationProgress = animationState.progress,
-            revealProgress = animationState.revealProgress
+            animationProgress = animationState.progress
         )
+//        drawLine(
+//            points = canvasPoints,
+//            color = config.lineColor.copy(alpha = animationState.alpha),
+//            strokeWidth = lineWidthPx,
+//            strokeCap = config.lineCap,
+//            animationProgress = animationState.progress,
+//            revealProgress = animationState.revealProgress
+//        )
 
         // 6. Noktaları çiz (en üstte)
         if (config.showPoints) {
-            drawPoints(
+//            drawPoints(
+//                points = canvasPoints,
+//                pointColor = config.pointColor.copy(alpha = animationState.alpha),
+//                pointRadius = pointRadiusPx * animationState.scale,
+//                pointStrokeWidth = pointStrokeWidthPx,
+//                pointFillColor = config.pointFillColor.copy(alpha = animationState.alpha),
+//                animationProgress = animationState.progress,
+//                slideOffset = animationState.slideOffset,
+//                drawableHeight = actualMapper.drawableHeight
+//            )
+            drawCustomPoints(
                 points = canvasPoints,
-                pointColor = config.pointColor.copy(alpha = animationState.alpha),
-                pointRadius = pointRadiusPx * animationState.scale,
-                pointStrokeWidth = pointStrokeWidthPx,
-                pointFillColor = config.pointFillColor.copy(alpha = animationState.alpha),
                 animationProgress = animationState.progress,
-                slideOffset = animationState.slideOffset,
-                drawableHeight = actualMapper.drawableHeight
-            )
+                drawableHeight = size.height
+            ) { index, center, scale ->
+
+                // Yarıçapı animasyon scale değeriyle çarpıyoruz
+                val currentRadius = 6.dp.toPx() * scale
+                val strokeWidth = 1.dp.toPx()
+
+                // İç Dolgu (Beyaz)
+                drawCircle(
+                    color = Color.White,
+                    radius = currentRadius,
+                    center = center
+                )
+
+                // Dış Çerçeve (Mavi)
+                drawCircle(
+                    color = Color.Blue,
+                    radius = currentRadius,
+                    center = center,
+                    style = Stroke(width = strokeWidth)
+                )
+            }
         }
     }
 }

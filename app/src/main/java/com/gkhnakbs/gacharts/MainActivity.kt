@@ -20,11 +20,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gkhnakbs.gacharts.ui.theme.GAChartsTheme
 import com.gkhnakbs.gcharts.charts.LineChart
+import com.gkhnakbs.gcharts.charts.animation.ChartAnimationEasing
 import com.gkhnakbs.gcharts.charts.animation.ChartAnimationType
 import com.gkhnakbs.gcharts.charts.config.LineChartConfig
 import com.gkhnakbs.gcharts.charts.config.LineChartStyle
@@ -51,16 +53,26 @@ class MainActivity : ComponentActivity() {
                         val sampleData = remember {
                             LineChartData(
                                 points = listOf(
-                                    DataPoint(0.5f, 90f, "test1"),
-                                    DataPoint(1.3f, 250f, "test2"),
+                                    DataPoint(0f, 90f, "test1"),
+                                    DataPoint(1f, 250f, "test2"),
                                     DataPoint(2f, 180f, "test3"),
                                     DataPoint(3f, 350f, "test4"),
-                                    DataPoint(4.4f, 280f, "test5"),
+                                    DataPoint(4f, 280f, "test5"),
                                     DataPoint(5f, 450f, "test6 test6test6"),
                                     DataPoint(6f, 550f, "test6 test6test6"),
                                     DataPoint(7f, 650f, "test6 test6test6"),
-                                    DataPoint(8f, 550f, "test6 test7test7test7"),
-                                    DataPoint(8f, 760f, "test6 test6test6"),
+                                    DataPoint(8f, 610f, "test6 test6test6"),
+                                    DataPoint(9f, 623f, "test6 test6test6"),
+                                    DataPoint(10f, 440f, "test6 test6test6"),
+                                    DataPoint(11f, 640f, "test6 test6test6"),
+                                    DataPoint(12f, 610f, "test6 test6test6"),
+                                    DataPoint(13f, 620f, "test6 test6test6"),
+                                    DataPoint(14f, 770f, "test6 test7test7test7"),
+                                    DataPoint(15f, 990f, "test6 test7test7test7"),
+                                    DataPoint(16f, 1550f, "test6 test7test7test7"),
+                                    DataPoint(17f, 1250f, "test6 test7test7test7"),
+                                    DataPoint(18f, 1760f, "test6 test6test6"),
+                                    DataPoint(19f, 1760f, "test6 test6test6"),
                                 ),
                                 xAxisLabels = listOf(
                                     "test1",
@@ -105,7 +117,12 @@ class MainActivity : ComponentActivity() {
                                     lineWidth = 3.dp,
                                     pointRadius = 3.dp,
                                     showGrid = true,
-                                    animationEnabled = true
+                                    showPoints = true,
+                                    animationEnabled = true,
+                                    animationDuration = 1000,
+                                    lineCap = StrokeCap.Round,
+                                    animationType = ChartAnimationType.Draw,
+                                    animationEasing = ChartAnimationEasing.Linear,
                                 ),
                                 style = LineChartStyle(
                                     labelTextStyle = TextStyle(
