@@ -15,8 +15,8 @@ data class CoordinateMapper(
     private val paddingTopPx: Float,
     private val paddingBottomPx: Float,
     private val data: LineChartData,
-    val yAxisTicks : AxisCalculator.AxisTicks,
-    val xAxisTicks : AxisCalculator.AxisTicks,
+    val yAxisTicks: AxisCalculator.AxisTicks,
+    val xAxisTicks: AxisCalculator.AxisTicks,
 ) {
     // Çizilebilir alan boyutları
     val drawableWidth: Float = canvasWidth - paddingStartPx - paddingEndPx
@@ -41,12 +41,14 @@ data class CoordinateMapper(
      */
     fun dataToCanvas(point: DataPoint): Offset {
         // X: minLabelValue'dan başlayarak normalize et
-        val x = paddingStartPx + ((point.x - xAxisTicks.minLabelValue) / xAxisLabelValueRange) * drawableWidth
+        val x =
+            paddingStartPx + ((point.x - xAxisTicks.minLabelValue) / xAxisLabelValueRange) * drawableWidth
 
         // Canvas'ta Y ekseni ters (yukarı = 0, aşağı = max)
         // Veri koordinatında yukarı = max olmalı
         // minLabelValue -> drawableEndY (en aşağı), maxLabelValue -> drawableStartY (en yukarı)
-        val y = drawableEndY - ((point.y - yAxisTicks.minLabelValue) / yAxisLabelValueRange) * drawableHeight
+        val y =
+            drawableEndY - ((point.y - yAxisTicks.minLabelValue) / yAxisLabelValueRange) * drawableHeight
 
         return Offset(x, y)
     }
@@ -79,8 +81,8 @@ data class CoordinateMapper(
             padding: ChartPadding,
             density: Density,
             data: LineChartData,
-            yAxisTicks : AxisCalculator.AxisTicks,
-            xAxisTicks : AxisCalculator.AxisTicks,
+            yAxisTicks: AxisCalculator.AxisTicks,
+            xAxisTicks: AxisCalculator.AxisTicks,
         ): CoordinateMapper {
             with(density) {
                 return CoordinateMapper(
@@ -91,8 +93,8 @@ data class CoordinateMapper(
                     paddingTopPx = padding.top.toPx(),
                     paddingBottomPx = padding.bottom.toPx(),
                     data = data,
-                    yAxisTicks=yAxisTicks,
-                    xAxisTicks=xAxisTicks,
+                    yAxisTicks = yAxisTicks,
+                    xAxisTicks = xAxisTicks,
                 )
             }
         }

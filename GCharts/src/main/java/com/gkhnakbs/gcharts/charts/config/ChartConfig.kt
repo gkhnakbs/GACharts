@@ -44,5 +44,5 @@ data class LineChartConfig(
     val animationType: ChartAnimationType = ChartAnimationType.Draw,
     val animationEasing: ChartAnimationEasing = ChartAnimationEasing.EaseOutCubic,
     val animationDelayMs: Int = 0,
-    val staggeredPointDelay: Int = 50  // Her nokta için ek gecikme (ms)
+    val staggeredPointDelay: Int = 50,  // Her nokta için ek gecikme (ms)
 )

@@ -2,7 +2,6 @@ package com.gkhnakbs.gcharts.charts.animation
 
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.EaseOutBack
 import androidx.compose.animation.core.EaseOutBounce
@@ -60,7 +59,7 @@ data class ChartAnimationConfig(
     val type: ChartAnimationType = ChartAnimationType.Draw,
     val easing: ChartAnimationEasing = ChartAnimationEasing.EaseOutCubic,
     val delayMs: Int = 0,
-    val staggeredDelay: Int = 0  // Her nokta için ek gecikme (ms)
+    val staggeredDelay: Int = 0,  // Her nokta için ek gecikme (ms)
 )
 
 /**
@@ -72,7 +71,7 @@ data class ChartAnimationState(
     val alpha: Float = 1f,
     val scale: Float = 1f,
     val slideOffset: Float = 0f,
-    val revealProgress: Float = 1f
+    val revealProgress: Float = 1f,
 )
 
 /**
@@ -82,7 +81,7 @@ data class ChartAnimationState(
 fun rememberChartAnimationState(
     key: Any,
     enabled: Boolean,
-    duration: Int
+    duration: Int,
 ): Float {
     return rememberChartAnimationState(
         key = key,
@@ -99,7 +98,7 @@ fun rememberChartAnimationState(
 @Composable
 fun rememberChartAnimationState(
     key: Any,
-    config: ChartAnimationConfig
+    config: ChartAnimationConfig,
 ): ChartAnimationState {
     val animatable = remember { Animatable(0f) }
 
@@ -144,6 +143,7 @@ fun rememberChartAnimationState(
             slideOffset = 0f,
             revealProgress = 1f
         )
+
         ChartAnimationType.FadeIn -> ChartAnimationState(
             progress = 1f,
             alpha = progress,
@@ -151,6 +151,7 @@ fun rememberChartAnimationState(
             slideOffset = 0f,
             revealProgress = 1f
         )
+
         ChartAnimationType.SlideUp -> ChartAnimationState(
             progress = 1f,
             alpha = progress,
@@ -158,6 +159,7 @@ fun rememberChartAnimationState(
             slideOffset = 1f - progress,  // 1 -> 0 (aşağıdan yukarı)
             revealProgress = 1f
         )
+
         ChartAnimationType.SlideDown -> ChartAnimationState(
             progress = 1f,
             alpha = progress,
@@ -165,6 +167,7 @@ fun rememberChartAnimationState(
             slideOffset = 1f - progress,  // 1 -> 0 (aşağıdan yukarı)
             revealProgress = 1f
         )
+
         ChartAnimationType.Scale -> ChartAnimationState(
             progress = 1f,
             alpha = 1f,
@@ -172,6 +175,7 @@ fun rememberChartAnimationState(
             slideOffset = 0f,
             revealProgress = 1f
         )
+
         ChartAnimationType.Reveal -> ChartAnimationState(
             progress = 1f,
             alpha = 1f,
@@ -189,7 +193,7 @@ fun rememberChartAnimationState(
 fun rememberStaggeredAnimationStates(
     key: Any,
     itemCount: Int,
-    config: ChartAnimationConfig
+    config: ChartAnimationConfig,
 ): List<Float> {
     val animatables = remember(itemCount) {
         List(itemCount) { Animatable(0f) }
@@ -239,7 +243,7 @@ fun rememberStaggeredAnimationStates(
 fun rememberParallelStaggeredAnimation(
     key: Any,
     itemCount: Int,
-    config: ChartAnimationConfig
+    config: ChartAnimationConfig,
 ): List<Float> {
     val animatables = remember(itemCount) {
         List(itemCount) { Animatable(0f) }

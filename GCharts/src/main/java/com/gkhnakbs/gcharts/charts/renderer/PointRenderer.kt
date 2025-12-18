@@ -19,9 +19,10 @@ object PointRenderer {
         pointFillColor: Color,
         animationProgress: Float = 1f,
         slideOffset: Float = 0f,
-        drawableHeight: Float = 0f
+        drawableHeight: Float = 0f,
     ) {
-        val visiblePointCount = (points.size * animationProgress).toInt().coerceIn(minimumValue = 1, maximumValue = points.size)
+        val visiblePointCount = (points.size * animationProgress).toInt()
+            .coerceIn(minimumValue = 1, maximumValue = points.size)
 
         for (i in 0 until visiblePointCount) {
             val point = points[i]
@@ -58,7 +59,7 @@ object PointRenderer {
         slideOffset: Float = 0f,       // 0f ile 1f arası (Y ekseni alttan geliş)
         drawableHeight: Float = 0f,
         // ÖZELLEŞTİRME BURADA: Her nokta için ne çizileceğine sen karar verirsin
-        onDrawPoint: DrawScope.(index: Int, center: Offset, scale: Float) -> Unit
+        onDrawPoint: DrawScope.(index: Int, center: Offset, scale: Float) -> Unit,
     ) {
         // Toplam kaç nokta olduğu
         val totalPoints = points.size

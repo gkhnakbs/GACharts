@@ -17,7 +17,7 @@ object LabelRenderer {
         ticks: AxisCalculator.AxisTicks,
         textColor: Color,
         textSize: Float,
-        defaultDistanceToYAxis : Float = 30f
+        defaultDistanceToYAxis: Float = 30f,
     ) {
         val paint = android.graphics.Paint().apply {
             color = textColor.hashCode()
@@ -27,30 +27,32 @@ object LabelRenderer {
 
         // Metin metriklerini kullanarak doğru dikey ortalama hesapla
         val fontMetrics = paint.fontMetrics
-        val textVerticalOffset = (fontMetrics.descent - fontMetrics.ascent) / 2 - fontMetrics.descent
+        val textVerticalOffset =
+            (fontMetrics.descent - fontMetrics.ascent) / 2 - fontMetrics.descent
 
-        val gridGapY = mapper.drawableHeight / (ticks.labels.size-1)
+        val gridGapY = mapper.drawableHeight / (ticks.labels.size - 1)
         ticks.values.forEachIndexed { index, value ->
             val y = mapper.yValueToCanvas(value)
             val label = ticks.labels[index]
 
             // Label'ın grafiğin dışına çıkmaması için sınırla
-            val clampedY = mapper.drawableEndY - (index * gridGapY).coerceAtMost(mapper.drawableHeight)
+            val clampedY =
+                mapper.drawableEndY - (index * gridGapY).coerceAtMost(mapper.drawableHeight)
 
             drawContext.canvas.nativeCanvas.drawText(
                 label,
                 mapper.drawableStartX - defaultDistanceToYAxis,
-                clampedY+textVerticalOffset,
+                clampedY + textVerticalOffset,
                 paint
             )
         }
     }
 
     fun DrawScope.drawXAxisLabels(
-        mapper:  CoordinateMapper,
+        mapper: CoordinateMapper,
         ticks: AxisCalculator.AxisTicks,
         textColor: Color,
-        textSize:  Float
+        textSize: Float,
     ) {
         val paint = android.graphics.Paint().apply {
             color = textColor.hashCode()

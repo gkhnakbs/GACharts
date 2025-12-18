@@ -26,10 +26,8 @@ import com.gkhnakbs.gcharts.charts.renderer.AxisRenderer.drawAxes
 import com.gkhnakbs.gcharts.charts.renderer.GridRenderer.drawGrid
 import com.gkhnakbs.gcharts.charts.renderer.LabelRenderer.drawXAxisLabels
 import com.gkhnakbs.gcharts.charts.renderer.LabelRenderer.drawYAxisLabels
-import com.gkhnakbs.gcharts.charts.renderer.LineRenderer.drawLine
 import com.gkhnakbs.gcharts.charts.renderer.LineRenderer.drawSmoothLine
 import com.gkhnakbs.gcharts.charts.renderer.PointRenderer.drawCustomPoints
-import com.gkhnakbs.gcharts.charts.renderer.PointRenderer.drawPoints
 
 /**
  * Created by Gökhan Akbaş on 09/12/2025.

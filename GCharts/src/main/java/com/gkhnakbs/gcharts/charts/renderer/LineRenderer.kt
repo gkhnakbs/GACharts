@@ -22,7 +22,7 @@ object LineRenderer {
         strokeWidth: Float,
         strokeCap: StrokeCap,
         animationProgress: Float = 1f,
-        revealProgress: Float = 1f
+        revealProgress: Float = 1f,
     ) {
         if (points.size < 2) return
 
@@ -30,7 +30,8 @@ object LineRenderer {
             moveTo(points.first().x, points.first().y)
 
             // Animasyonlu çizim için kaç nokta gösterileceğini hesapla
-            val visiblePointCount = (points.size * animationProgress).toInt().coerceIn(1, maximumValue = points.size)
+            val visiblePointCount =
+                (points.size * animationProgress).toInt().coerceIn(1, maximumValue = points.size)
 
             for (i in 1 until visiblePointCount) {
                 lineTo(points[i].x, points[i].y)
@@ -83,7 +84,7 @@ object LineRenderer {
         color: Color,
         strokeWidth: Float,
         strokeCap: StrokeCap = StrokeCap.Round,
-        animationProgress: Float = 1f
+        animationProgress: Float = 1f,
     ) {
         if (points.size < 2) return
 

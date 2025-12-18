@@ -5,7 +5,7 @@ package com.gkhnakbs.gcharts.charts.renderer
  */
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose. ui.graphics.PathEffect
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import com.gkhnakbs.gcharts.charts.core.CoordinateMapper
 
@@ -16,7 +16,7 @@ object GridRenderer {
         gridColor: Color,
         gridStrokeWidth: Float,
         horizontalLines: Int,
-        verticalLines: Int
+        verticalLines: Int,
     ) {
         val dashEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
 

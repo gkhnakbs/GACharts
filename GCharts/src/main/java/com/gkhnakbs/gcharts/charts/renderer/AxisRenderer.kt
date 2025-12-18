@@ -4,9 +4,9 @@ package com.gkhnakbs.gcharts.charts.renderer
  * Created by Gökhan Akbaş on 09/12/2025.
  */
 
-import androidx.compose.ui. geometry.Offset
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics. drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import com.gkhnakbs.gcharts.charts.core.CoordinateMapper
 
 object AxisRenderer {
@@ -14,7 +14,7 @@ object AxisRenderer {
     fun DrawScope.drawAxes(
         mapper: CoordinateMapper,
         axisColor: Color,
-        axisStrokeWidth: Float
+        axisStrokeWidth: Float,
     ) {
         // Y ekseni (sol)
         drawLine(
