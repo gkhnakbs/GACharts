@@ -34,7 +34,7 @@ object GridRenderer {
         }
 
         // Dikey çizgiler (verticalLines + 1 tane çizgi çizmek için)
-        for (i in 0..verticalLines) {
+        for (i in 1..verticalLines) {
             val x = mapper.drawableStartX + (mapper.drawableWidth / verticalLines) * i
 
             drawLine(

@@ -6,6 +6,7 @@ import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.log10
 import kotlin.math.pow
+import kotlin.math.abs
 
 /**
  * Created by Gökhan Akbaş on 10/12/2025.
@@ -16,7 +17,7 @@ object AxisCalculator {
         val values: List<Float>,
         val labels: List<String>,
         val maxLabelValue: Float,
-        val minLabelValue: Float,
+        val minLabelValue: Float
     )
 
     /**
@@ -28,11 +29,26 @@ object AxisCalculator {
         desiredTickCount: Int = 5,
     ): AxisTicks {
         if (minValue == maxValue) {
+            // Tek değer durumunda aralığı küçük bir epsilon ile genişlet
+            // Epsilon, değerin büyüklüğüne göre ölçeklenir ve en az 1.0 olur
+            val base = abs(minValue)
+            val epsilon = when {
+                base == 0f -> 1f
+                base < 1f -> 0.1f
+                else -> (base * 0.1f).coerceAtLeast(1f)
+            }
+
+            val minLabel = minValue - epsilon
+            val maxLabel = maxValue + epsilon
+
+            // En az 3 tick: min, value, max
+            val values = listOf(minLabel, minValue, maxLabel)
+
             return AxisTicks(
-                values = listOf(minValue),
-                labels = listOf(formatLabel(minValue)),
-                maxLabelValue = maxValue,
-                minLabelValue = minValue
+                values = values,
+                labels = values.map { formatLabel(it) },
+                maxLabelValue = maxLabel,
+                minLabelValue = minLabel
             )
         }
 

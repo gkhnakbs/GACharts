@@ -4,10 +4,20 @@ package com.gkhnakbs.gcharts.charts.renderer
  * Created by Gökhan Akbaş on 09/12/2025.
  */
 
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextMeasurer
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 object PointRenderer {
 
@@ -21,78 +31,115 @@ object PointRenderer {
         slideOffset: Float = 0f,
         drawableHeight: Float = 0f,
     ) {
+        if (points.isEmpty()) return
+
+        val slideDelta = if (slideOffset > 0f && drawableHeight > 0f) {
+            drawableHeight * slideOffset
+        } else {
+            0f
+        }
+
+        // Çizilecek nokta sayısı
         val visiblePointCount = (points.size * animationProgress).toInt()
-            .coerceIn(minimumValue = 1, maximumValue = points.size)
+            .coerceIn(0, points.size)
 
         for (i in 0 until visiblePointCount) {
             val point = points[i]
 
-            // SlideUp animasyonu için Y offset hesapla
-            val animatedY = if (slideOffset > 0f && drawableHeight > 0f) {
-                point.y + (drawableHeight * slideOffset)
-            } else {
-                point.y
-            }
+            val centerPos = point.copy(y = point.y + slideDelta)
 
-            val animatedPoint = Offset(point.x, animatedY)
-
-            // İç dolgu (beyaz)
+            // 1. İç dolgu
             drawCircle(
                 color = pointFillColor,
                 radius = pointRadius,
-                center = animatedPoint
+                center = centerPos
             )
-
-            // Dış çerçeve (renkli)
+            // 2. Çerçeve
             drawCircle(
                 color = pointColor,
                 radius = pointRadius,
-                center = animatedPoint,
+                center = centerPos,
                 style = Stroke(width = pointStrokeWidth)
             )
         }
     }
 
-    fun DrawScope.drawCustomPoints(
-        points: List<Offset>,
-        animationProgress: Float = 1f, // 0f ile 1f arası (X ekseni ilerlemesi)
-        slideOffset: Float = 0f,       // 0f ile 1f arası (Y ekseni alttan geliş)
+    fun DrawScope.drawPopup(
+        selectedPoint: Offset?,
+        popupValue: String,
+        textMeasurer: TextMeasurer,
+        popupAnimationProgress: Float, // 0f (yok) -> 1f (tam)
+        slideOffset: Float = 0f,
         drawableHeight: Float = 0f,
-        // ÖZELLEŞTİRME BURADA: Her nokta için ne çizileceğine sen karar verirsin
-        onDrawPoint: DrawScope.(index: Int, center: Offset, scale: Float) -> Unit,
     ) {
-        // Toplam kaç nokta olduğu
-        val totalPoints = points.size
+        if (selectedPoint == null || popupAnimationProgress <= 0f) return
 
-        // Animasyon ilerlemesine göre şu an kaçıncı noktanın çizileceği (veya çizilmekte olduğu)
-        val currentProgressIndex = (totalPoints * animationProgress)
+        // Noktanın slide animasyonundaki gerçek yerini bul
+        val slideDelta =
+            if (slideOffset > 0f && drawableHeight > 0f) drawableHeight * slideOffset else 0f
+        val anchorPoint = selectedPoint.copy(y = selectedPoint.y + slideDelta)
 
-        points.forEachIndexed { index, point ->
-            // Eğer bu noktanın sırası henüz gelmediyse döngüyü pas geç (Performans)
-            if (index > currentProgressIndex) return@forEachIndexed
+        // Animasyon parametreleri
+        val scale = popupAnimationProgress // Büyüme efekti
+        val alpha = popupAnimationProgress.coerceIn(0f, 1f) // Opaklık efekti
 
-            // --- ANIMASYON HESAPLAMALARI ---
+        // Popup Stil Ayarları
+        val padding = 12.dp.toPx()
+        val cornerRadius = 8.dp.toPx()
+        val arrowHeight = 8.dp.toPx()
+        val backgroundColor = Color(0xFF333333).copy(alpha = 0.9f * alpha)
+        val textColor = Color.White.copy(alpha = alpha)
 
-            // 1. Scale (Büyüme) Efekti:
-            // Nokta sırası geldikçe 0'dan 1'e büyüsün.
-            // Örneğin: currentProgressIndex 5.5 ise; 5. nokta tam boyutta(1f), 6. nokta yarım boyutta(0.5f) olur.
-            val pointScale = (currentProgressIndex - index).coerceIn(0f, 1f)
+        // Metni ölç (TextMeasurer Compose 1.3+ ile geldi)
+        val textLayoutResult: TextLayoutResult = textMeasurer.measure(
+            text = popupValue,
+            style = TextStyle(color = textColor, fontSize = 14.sp)
+        )
 
-            // Eğer çok küçükse çizme (boşuna GPU yorma)
-            if (pointScale <= 0f) return@forEachIndexed
+        val boxWidth = textLayoutResult.size.width + (padding * 2)
+        val boxHeight = textLayoutResult.size.height + (padding * 2)
 
-            // 2. Slide (Alttan Kayma) Efekti:
-            val animatedY = if (slideOffset > 0f && drawableHeight > 0f) {
-                // slideOffset 1 ise en altta, 0 ise orijinal yerinde
-                point.y + (drawableHeight * slideOffset)
-            } else {
-                point.y
+        // Popup'ın konumu (Noktanın tam üstü)
+        // Scale efektini merkezden uygulamak için math işlemleri:
+        val targetBottomY = anchorPoint.y - arrowHeight - 10f // Noktanın 10px yukarısı
+        val currentBoxWidth = boxWidth * scale
+        val currentBoxHeight = boxHeight * scale
+
+        val left = anchorPoint.x - (currentBoxWidth / 2)
+        val top = targetBottomY - currentBoxHeight
+        val right = left + currentBoxWidth
+        val bottom = targetBottomY
+
+        // --- BALONCUK ŞEKLİ (Path) ---
+        val path = Path().apply {
+            // Yuvarlak dikdörtgen
+            addRoundRect(
+                RoundRect(
+                    rect = Rect(left, top, right, bottom),
+                    cornerRadius = CornerRadius(cornerRadius * scale)
+                )
+            )
+            // Altındaki üçgen ok (Arrow)
+            if (scale > 0.8f) { // Ok sadece kutu yeterince büyüyünce çıksın
+                moveTo(anchorPoint.x - (6.dp.toPx() * scale), bottom)
+                lineTo(anchorPoint.x, bottom + (arrowHeight * scale))
+                lineTo(anchorPoint.x + (6.dp.toPx() * scale), bottom)
+                close()
             }
+        }
 
-            val centerPos = Offset(point.x, animatedY)
+        // Baloncuğu çiz
+        drawPath(path = path, color = backgroundColor)
 
-            // Hesaplanan değerleri çiziciye gönder
-            onDrawPoint(index, centerPos, pointScale)
+        // Yazıyı çiz (sadece kutu belli bir boyuta gelince)
+        if (scale > 0.5f) {
+            drawText(
+                textLayoutResult = textLayoutResult,
+                topLeft = Offset(
+                    x = left + padding * scale, // Padding'i de scale et
+                    y = top + padding * scale
+                )
+            )
         }
     }
 }

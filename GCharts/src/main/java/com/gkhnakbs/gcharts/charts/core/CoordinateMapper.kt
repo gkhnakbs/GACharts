@@ -3,6 +3,10 @@ package com.gkhnakbs.gcharts.charts.core
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.coerceAtLeast
+import androidx.compose.ui.unit.coerceIn
+import androidx.compose.ui.unit.dp
 
 /**
  * Created by Gökhan Akbaş on 09/12/2025.
@@ -10,23 +14,24 @@ import androidx.compose.ui.unit.Density
 data class CoordinateMapper(
     private val canvasWidth: Float,
     private val canvasHeight: Float,
-    private val paddingStartPx: Float,
-    private val paddingEndPx: Float,
-    private val paddingTopPx: Float,
-    private val paddingBottomPx: Float,
+    val axisLabelWidthPx : Float,
+    val paddingStartPx: Float,
+    val paddingEndPx: Float,
+    val paddingTopPx: Float,
+    val paddingBottomPx: Float,
     private val data: LineChartData,
     val yAxisTicks: AxisCalculator.AxisTicks,
     val xAxisTicks: AxisCalculator.AxisTicks,
 ) {
     // Çizilebilir alan boyutları
-    val drawableWidth: Float = canvasWidth - paddingStartPx - paddingEndPx
-    val drawableHeight: Float = canvasHeight - paddingTopPx - paddingBottomPx
+    val drawableWidth: Float = canvasWidth - paddingStartPx - paddingEndPx - axisLabelWidthPx
+    val drawableHeight: Float = canvasHeight - paddingTopPx - paddingBottomPx - axisLabelWidthPx
 
     // Çizilebilir alanın başlangıç noktası
-    val drawableStartX: Float = paddingStartPx
+    val drawableStartX: Float = paddingStartPx + axisLabelWidthPx
     val drawableStartY: Float = paddingTopPx
     val drawableEndX: Float = canvasWidth - paddingEndPx
-    val drawableEndY: Float = canvasHeight - paddingBottomPx
+    val drawableEndY: Float = canvasHeight - paddingBottomPx - axisLabelWidthPx
 
     val yAxisLabelValueRange by lazy {
         yAxisTicks.maxLabelValue - yAxisTicks.minLabelValue
@@ -35,20 +40,17 @@ data class CoordinateMapper(
         xAxisTicks.maxLabelValue - xAxisTicks.minLabelValue
     }
 
-
     /**
      * DataPoint'i Canvas koordinatına çevirir
      */
     fun dataToCanvas(point: DataPoint): Offset {
         // X: minLabelValue'dan başlayarak normalize et
-        val x =
-            paddingStartPx + ((point.x - xAxisTicks.minLabelValue) / xAxisLabelValueRange) * drawableWidth
+        val x = drawableStartX + ((point.x - xAxisTicks.minLabelValue) / xAxisLabelValueRange) * drawableWidth
 
         // Canvas'ta Y ekseni ters (yukarı = 0, aşağı = max)
         // Veri koordinatında yukarı = max olmalı
         // minLabelValue -> drawableEndY (en aşağı), maxLabelValue -> drawableStartY (en yukarı)
-        val y =
-            drawableEndY - ((point.y - yAxisTicks.minLabelValue) / yAxisLabelValueRange) * drawableHeight
+        val y = drawableEndY - ((point.y - yAxisTicks.minLabelValue) / yAxisLabelValueRange) * drawableHeight
 
         return Offset(x, y)
     }
@@ -79,6 +81,7 @@ data class CoordinateMapper(
             canvasWidth: Float,
             canvasHeight: Float,
             padding: ChartPadding,
+            axisLabelWidthDp : Dp,
             density: Density,
             data: LineChartData,
             yAxisTicks: AxisCalculator.AxisTicks,
@@ -89,12 +92,13 @@ data class CoordinateMapper(
                     canvasWidth = canvasWidth,
                     canvasHeight = canvasHeight,
                     paddingStartPx = padding.start.toPx(),
-                    paddingEndPx = padding.end.toPx(),
-                    paddingTopPx = padding.top.toPx(),
+                    paddingEndPx = (padding.end + 10.dp).coerceAtLeast(10.dp).toPx(),
+                    paddingTopPx = (padding.top + 10.dp).coerceAtLeast(10.dp).toPx(),
                     paddingBottomPx = padding.bottom.toPx(),
                     data = data,
                     yAxisTicks = yAxisTicks,
                     xAxisTicks = xAxisTicks,
+                    axisLabelWidthPx = axisLabelWidthDp.toPx()
                 )
             }
         }

@@ -18,7 +18,13 @@ data class LineChartConfig(
     val lineColor: Color = Color(0xFF2196F3),
     val lineWidth: Dp = 2.dp,
     val lineCap: StrokeCap = StrokeCap.Round,
-
+    val smoothLine: Boolean = true,
+    val smoothLineCoefficient: Float = 0.15f,
+    val showLineShadow : Boolean = true,
+    val shadowConfig : LineShadowConfig = LineShadowConfig(
+        shadowColors = listOf(lineColor,Color.Transparent),
+        shadowRotation = LineShadowConfig.LineShadowRotation.TOP_TO_BOTTOM
+    ),
     // Nokta ayarları
     val showPoints: Boolean = true,
     val pointRadius: Dp = 4.dp,
@@ -36,6 +42,7 @@ data class LineChartConfig(
     // Eksen ayarları
     val showAxes: Boolean = true,
     val axisColor: Color = Color(0xFF9E9E9E),
+    val axisLabelWidthDp : Dp = 10.dp,
     val axisStrokeWidth: Dp = 1.dp,
 
     // Animasyon ayarları

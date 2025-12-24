@@ -4,6 +4,7 @@ package com.gkhnakbs.gcharts.charts.renderer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import com.gkhnakbs.gcharts.charts.core.AxisCalculator
 import com.gkhnakbs.gcharts.charts.core.CoordinateMapper
 
@@ -17,10 +18,9 @@ object LabelRenderer {
         ticks: AxisCalculator.AxisTicks,
         textColor: Color,
         textSize: Float,
-        defaultDistanceToYAxis: Float = 30f,
     ) {
         val paint = android.graphics.Paint().apply {
-            color = textColor.hashCode()
+            color = textColor.toArgb()
             this.textSize = textSize
             textAlign = android.graphics.Paint.Align.CENTER
         }
@@ -31,17 +31,15 @@ object LabelRenderer {
             (fontMetrics.descent - fontMetrics.ascent) / 2 - fontMetrics.descent
 
         val gridGapY = mapper.drawableHeight / (ticks.labels.size - 1)
-        ticks.values.forEachIndexed { index, value ->
-            val y = mapper.yValueToCanvas(value)
-            val label = ticks.labels[index]
 
+        ticks.labels.forEachIndexed { index, label ->
             // Label'ın grafiğin dışına çıkmaması için sınırla
             val clampedY =
                 mapper.drawableEndY - (index * gridGapY).coerceAtMost(mapper.drawableHeight)
 
             drawContext.canvas.nativeCanvas.drawText(
                 label,
-                mapper.drawableStartX - defaultDistanceToYAxis,
+                mapper.paddingStartPx + (mapper.axisLabelWidthPx / 2),
                 clampedY + textVerticalOffset,
                 paint
             )
@@ -55,19 +53,23 @@ object LabelRenderer {
         textSize: Float,
     ) {
         val paint = android.graphics.Paint().apply {
-            color = textColor.hashCode()
+            color = textColor.toArgb()
             this.textSize = textSize
             textAlign = android.graphics.Paint.Align.CENTER
         }
 
-        ticks.values.forEachIndexed { index, value ->
-            val x = mapper.xValueToCanvas(value)
-            val label = ticks.labels[index]
+        val gridGapX = mapper.drawableWidth / (ticks.labels.lastIndex)
+
+        ticks.labels.forEachIndexed { index, label ->
+            val x = (mapper.drawableStartX + index * gridGapX).coerceIn(
+                mapper.drawableStartX,
+                mapper.drawableEndX
+            )
 
             drawContext.canvas.nativeCanvas.drawText(
                 label,
                 x,
-                mapper.drawableEndY + textSize + 8f,
+                mapper.drawableEndY + (mapper.axisLabelWidthPx / 2),
                 paint
             )
         }

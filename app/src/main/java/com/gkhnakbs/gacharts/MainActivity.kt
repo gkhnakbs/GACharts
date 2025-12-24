@@ -4,12 +4,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -41,13 +43,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             GAChartsTheme {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().background(color = Color.Black),
                     contentAlignment = Alignment.Center
                 ) {
                     Box(
-                        modifier = Modifier
-                            .width(400.dp)
-                            .height(400.dp),
+                        modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         val sampleData = remember {
@@ -90,7 +90,9 @@ class MainActivity : ComponentActivity() {
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            val data = remember { mutableStateOf(sampleData) }
+                            val index = remember { mutableStateOf(1) }
+
+                            val data = remember { mutableStateOf(sampleData.copy(points = sampleData.points.take(1))) }
 
                             val firstValue by remember {
                                 derivedStateOf { data.value.points.firstOrNull()?.y }
@@ -98,8 +100,9 @@ class MainActivity : ComponentActivity() {
 
                             Button(
                                 onClick = {
+                                    index.value += 1
                                     data.value = data.value.copy(
-                                        points = data.value.points.map { it.copy(y = it.y + 50) }
+                                        points = sampleData.points.take(index.value)
                                     )
                                 }
                             ) {
@@ -114,24 +117,66 @@ class MainActivity : ComponentActivity() {
                                 config = LineChartConfig(
                                     lineColor = Color(0xFFE91E63),
                                     pointColor = Color(0xFFE91E63),
+                                    smoothLine = true,
+                                    smoothLineCoefficient = 0.15f,
                                     lineWidth = 3.dp,
                                     pointRadius = 3.dp,
-                                    showGrid = true,
-                                    showPoints = true,
+                                    gridColor = Color.White,
+                                    axisColor = Color.White,
                                     animationEnabled = true,
                                     animationDuration = 1000,
-                                    lineCap = StrokeCap.Round,
-                                    animationType = ChartAnimationType.Draw,
-                                    animationEasing = ChartAnimationEasing.Linear,
+                                    axisLabelWidthDp = 50.dp
                                 ),
                                 style = LineChartStyle(
+                                    backgroundColor = Color(0xFF112D4D),
                                     labelTextStyle = TextStyle(
-                                        color = Color(0xFF757575),
+                                        color = Color.White,
                                         fontSize = 8.sp
                                     )
                                 ),
                                 padding = ChartPadding(0.dp, 0.dp, 0.dp, 0.dp),
-                                modifier = Modifier.fillMaxSize()
+                                modifier = Modifier.fillMaxWidth().height(400.dp)
+                            )
+
+
+                            Button(
+                                onClick = {
+                                    index.value -= 1
+                                    data.value = data.value.copy(
+                                        points = sampleData.points.take(index.value)
+                                    )
+                                }
+                            ) {
+                                Text(
+                                    text = firstValue?.toString() ?: "-",
+                                    fontSize = 20.sp
+                                )
+                            }
+
+                            LineChart(
+                                data = data.value,
+                                config = LineChartConfig(
+                                    lineColor = Color(0xFFE91E63),
+                                    pointColor = Color(0xFFE91E63),
+                                    smoothLine = true,
+                                    smoothLineCoefficient = 0.15f,
+                                    lineWidth = 3.dp,
+                                    pointRadius = 3.dp,
+                                    gridColor = Color.White,
+                                    axisColor = Color.White,
+                                    animationEnabled = true,
+                                    animationDuration = 1000,
+                                    axisLabelWidthDp = 20.dp
+                                ),
+                                style = LineChartStyle(
+                                    backgroundColor = Color(0xFF112D4D),
+                                    labelTextStyle = TextStyle(
+                                        color = Color.White,
+                                        fontSize = 8.sp
+                                    )
+                                ),
+                                padding = ChartPadding(0.dp, 0.dp, 0.dp, 0.dp),
+                                modifier = Modifier.size(200.dp)
                             )
                         }
                     }
