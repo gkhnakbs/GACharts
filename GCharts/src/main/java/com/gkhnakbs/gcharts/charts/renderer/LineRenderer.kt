@@ -21,10 +21,6 @@ import com.gkhnakbs.gcharts.charts.core.CoordinateMapper
 
 object LineRenderer {
 
-    // Path nesnelerini tekrar tekrar oluşturmamak için bu fonksiyon içinde scope dahilinde oluşturuyoruz.
-    // Ancak DrawScope stateless olduğu için her çağrıda new Path() kaçınılmazdır,
-    // fakat logic'i temizleyerek gereksiz ara listeleri kaldırdık.
-
     fun DrawScope.drawLine(
         points: List<Offset>,
         config: LineChartConfig,

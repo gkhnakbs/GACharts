@@ -391,8 +391,8 @@ fun LineChart(
                     }
 
                     clipRect(
-                        left = actualMapper.drawableStartX - (10.dp.toPx()), // Biraz pay bırak
-                        right = actualMapper.drawableEndX + (10.dp.toPx())
+                        left = actualMapper.drawableStartX - (5.dp.toPx()), // Biraz pay bırak
+                        right = actualMapper.drawableEndX + (5.dp.toPx())
                     ) {
                         translate(left = currentOffsetX) {
                             drawXAxisLabels(
@@ -443,13 +443,11 @@ fun LineChart(
                                 val activePoint = canvasPoints.getOrNull(selectedPointIndex)
 
                                 val popupText = activePoint?.let {
-                                    "Değer: ${
-                                        String.format(
-                                            Locale.getDefault(),
-                                            "%.1f",
-                                            data.points.getOrNull(selectedPointIndex)?.y ?: 0f
-                                        )
-                                    }"
+                                    String.format(
+                                        Locale.getDefault(),
+                                        "%.1f",
+                                        data.points.getOrNull(selectedPointIndex)?.y ?: 0f
+                                    )
                                 } ?: ""
 
                                 drawPopup(
